@@ -33,7 +33,6 @@ class GraphConvolution(Module):
         # need to change this part
         # input is X, adj is A, self.weight is w
         support = torch.mm(input, self.weight)
-        # first nx with support
         #adj_mat = adj.to_dense().cpu().numpy()
         #G = nx.from_numpy_matrix(adj_mat)
         # get 1 hop ego net
@@ -41,18 +40,10 @@ class GraphConvolution(Module):
         for node in G.nodes():
             ego_Net = nx.ego_graph(G,node)
             target = [item[1] for item in list(ego_Net.edges(node))]
-            #print ("node", node)
-            #print ("target", target)
-            #for (u, v) in ego_Net.edges(node):
-                #print(u,v)
-                #print(ego_Net.get_edge_data(v,u))
-            output_vect = sum(support[target])/len(target)
             output1 += [output_vect]
             output2 = torch.stack(output1, dim =0)
 
-        #print("output2", output2.size())
-        #output = torch.spmm(adj, support)
-        #print("output", output.size())
+        
         if self.bias is not None:
             return output2 + self.bias
         else:

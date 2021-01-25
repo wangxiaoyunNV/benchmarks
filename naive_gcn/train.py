@@ -63,12 +63,13 @@ if args.cuda:
 # change adj from matrix to graph
 adj_mat = adj.to_dense().cpu().numpy()
 adj = nx.from_numpy_matrix(adj_mat)
-
+# now adj is a graph not adj matrix
 
 def train(epoch):
     t = time.time()
     model.train()
     optimizer.zero_grad()
+    # input of model is now features and graph
     output = model(features, adj)
     loss_train = F.nll_loss(output[idx_train], labels[idx_train])
     acc_train = accuracy(output[idx_train], labels[idx_train])
