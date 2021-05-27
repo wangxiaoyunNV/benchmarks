@@ -40,6 +40,7 @@ class GraphConvolution(Module):
         for node in G.nodes():
             ego_Net = nx.ego_graph(G,node)
             target = [item[1] for item in list(ego_Net.edges(node))]
+            output_vect = sum(support[target])/len(target)
             output1 += [output_vect]
             output2 = torch.stack(output1, dim =0)
 
