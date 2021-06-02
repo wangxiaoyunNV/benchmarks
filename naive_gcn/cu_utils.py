@@ -2,8 +2,9 @@ import numpy as np
 import scipy.sparse as sp
 import torch
 import cugraph as cg
-import cudf as df
-import cupy 
+#import cudf as df
+import networkx as nx
+ 
 from time import perf_counter as pctime
 
 def encode_onehot(labels):
@@ -46,8 +47,10 @@ def load_data(path="data/cora/", dataset="cora"):
 
     features = torch.FloatTensor(np.array(features.todense()))
     labels = torch.LongTensor(np.where(labels)[1])
-    adj = sparse_mx_to_torch_sparse_tensor(adj)
-
+    #adj = sparse_mx_to_torch_sparse_tensor(adj)
+    # directly change adj to cugraph obj
+    #adj_G = nx.from_numpy_matrix(adj)
+    adj_G = cg.from_numpy_matrix(adj)
     idx_train = torch.LongTensor(idx_train)
     idx_val = torch.LongTensor(idx_val)
     idx_test = torch.LongTensor(idx_test)
@@ -71,7 +74,7 @@ def accuracy(output, labels):
     correct = correct.sum()
     return correct / len(labels)
 
-# not sure if we still need this
+# do not need this we like dense adj matrix
 def sparse_mx_to_torch_sparse_tensor(sparse_mx):
     """Convert a scipy sparse matrix to a torch sparse tensor."""
     sparse_mx = sparse_mx.tocoo().astype(np.float32)
