@@ -29,7 +29,7 @@ class GraphConvolution(Module):
         if self.bias is not None:
             self.bias.data.uniform_(-stdv, stdv)
 
-        def forward(self, input, G):
+    def forward(self, input, G):
         # need to change this part
         # input is X, adj is A, self.weight is w
         support = torch.mm(input, self.weight)
@@ -41,7 +41,7 @@ class GraphConvolution(Module):
         #batched_ego_graphs
         for node in G.nodes():
             #ego_Net = nx.ego_graph(G,node)
-            ego_Net = cg.ego_graph(adj,node,radius=1)
+            ego_Net = cg.ego_graph(G,node,radius=1)
             target = [item[1] for item in list(ego_Net.edges(node))]
             output_vect = sum(support[target])/len(target)
             output1 += [output_vect]
@@ -56,4 +56,4 @@ class GraphConvolution(Module):
     def __repr__(self):
         return self.__class__.__name__ + ' (' \
                + str(self.in_features) + ' -> ' \
-               + str(self.out_features) + ')
+               + str(self.out_features) + ')'
