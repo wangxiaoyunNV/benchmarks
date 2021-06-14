@@ -31,6 +31,7 @@ def load_data(path="data/cora/", dataset="cora"):
                                     dtype=np.int32)
     edges = np.array(list(map(idx_map.get, edges_unordered.flatten())),
                      dtype=np.int32).reshape(edges_unordered.shape)
+
     adj = sp.coo_matrix((np.ones(edges.shape[0]), (edges[:, 0], edges[:, 1])),
                         shape=(labels.shape[0], labels.shape[0]),
                         dtype=np.float32)
@@ -50,7 +51,10 @@ def load_data(path="data/cora/", dataset="cora"):
     #adj = sparse_mx_to_torch_sparse_tensor(adj)
     # directly change adj to cugraph obj
     #adj_G = nx.from_numpy_matrix(adj)
-    adj_G = cg.from_numpy_matrix(adj)
+    print(adj)
+    print("0",adj[0])
+    print("1",adj[1])
+    adj_G = cg.from_adjlist(adj)
     idx_train = torch.LongTensor(idx_train)
     idx_val = torch.LongTensor(idx_val)
     idx_test = torch.LongTensor(idx_test)
