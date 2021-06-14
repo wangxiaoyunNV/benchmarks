@@ -51,15 +51,18 @@ def load_data(path="data/cora/", dataset="cora"):
     #adj = sparse_mx_to_torch_sparse_tensor(adj)
     # directly change adj to cugraph obj
     #adj_G = nx.from_numpy_matrix(adj)
-    print(adj)
-    print("0",adj[0])
-    print("1",adj[1])
-    adj_G = cg.from_adjlist(adj)
+    adj = adj.toarray()
+    #print(adj)
+    #print("0",adj[0])
+    #print("1",adj[1])
+    adj_G = cg.Graph()
+    adj_G.from_numpy_array(adj)
+    #print(adj_G)
     idx_train = torch.LongTensor(idx_train)
     idx_val = torch.LongTensor(idx_val)
     idx_test = torch.LongTensor(idx_test)
     # need to change adj to cugraph graph object
-    return adj, features, labels, idx_train, idx_val, idx_test
+    return adj_G, features, labels, idx_train, idx_val, idx_test
 
 # may need to change this part from numpy scipy to cupy
 def normalize(mx):

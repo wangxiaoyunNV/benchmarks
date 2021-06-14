@@ -29,7 +29,7 @@ class GraphConvolution(Module):
         if self.bias is not None:
             self.bias.data.uniform_(-stdv, stdv)
 
-    def forward(self, input, G):
+    def forward(self, input, G, using_Batch = True):
         # need to change this part
         # input is X, adj is A, self.weight is w
         support = torch.mm(input, self.weight)
@@ -39,15 +39,20 @@ class GraphConvolution(Module):
         output1 = [] 
         # first use stupid method to write then change to batch ego net
         #batched_ego_graphs
-        for node in G.nodes():
+        num_nodes = G.number_of_nodes()
+        for node in range(num_nodes):
             #ego_Net = nx.ego_graph(G,node)
             ego_Net = cg.ego_graph(G,node,radius=1)
-            target = [item[1] for item in list(ego_Net.edges(node))]
+            target= ego_Net.view_edge_list()['dst'].unique()
+            #target = [item[1] for item in list(ego_Net.edges(node))]
+            #print ("len of target", len(target))
+            print ("node idx", node)
             output_vect = sum(support[target])/len(target)
+            print ( "output_vect", output_vect)
             output1 += [output_vect]
             output2 = torch.stack(output1, dim =0)
 
-        
+        print("done with for loop")
         if self.bias is not None:
             return output2 + self.bias
         else:
