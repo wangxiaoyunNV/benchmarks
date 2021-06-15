@@ -13,6 +13,8 @@ class GCN(nn.Module):
 
     def forward(self, x, adj):
         x = F.relu(self.gc1(x, adj))
+        print (x.cpu().detach().numpy())
         x = F.dropout(x, self.dropout, training=self.training)
         x = self.gc2(x, adj)
+        print (x.cpu().detach().numpy())
         return F.log_softmax(x, dim=1)

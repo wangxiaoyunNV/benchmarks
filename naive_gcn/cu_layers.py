@@ -57,11 +57,10 @@ class GraphConvolution_cu(Module):
         print (output2.cpu().detach().numpy())        
         print("done with for loop")
         if self.bias is not None:
-            #print (output2 + self.bias)
             return output2 + self.bias
         else:
-            #print (output2)
             return output2
+        
 
     def __repr__(self):
         return self.__class__.__name__ + ' (' \

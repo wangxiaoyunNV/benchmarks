@@ -18,5 +18,5 @@ class GCN(nn.Module):
         x = F.dropout(x, self.dropout, training=self.training)
         print("done dropout, x, adj",x,adj)
         x = self.gc2(x, adj)
-        print("done gc2", x.cpu().numpy())
+        print("done gc2", x.cpu().detach().numpy())
         return F.log_softmax(x, dim=1)
