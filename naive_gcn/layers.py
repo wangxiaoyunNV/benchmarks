@@ -42,8 +42,8 @@ class GraphConvolution(Module):
             target = [item[1] for item in list(ego_Net.edges(node))]
             output_vect = sum(support[target])/len(target)
             output1 += [output_vect]
-            output2 = torch.stack(output1, dim =0)
-
+        
+        output2 = torch.stack(output1, dim =0)    
         
         if self.bias is not None:
             return output2 + self.bias

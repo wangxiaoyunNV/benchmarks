@@ -4,16 +4,15 @@ import torch
 
 from torch.nn.parameter import Parameter
 from torch.nn.modules.module import Module
-import networkx as nx
 import cugraph as cg
 
-class GraphConvolution(Module):
+class GraphConvolution_cu(Module):
     """
     Simple GCN layer, similar to https://arxiv.org/abs/1609.02907
     """
 
     def __init__(self, in_features, out_features, bias=True):
-        super(GraphConvolution, self).__init__()
+        super(GraphConvolution_cu, self).__init__()
         self.in_features = in_features
         self.out_features = out_features
         self.weight = Parameter(torch.FloatTensor(in_features, out_features))
@@ -33,8 +32,7 @@ class GraphConvolution(Module):
         # need to change this part
         # input is X, adj is A, self.weight is w
         support = torch.mm(input, self.weight)
-        #adj_mat = adj.to_dense().cpu().numpy()
-        #G = nx.from_numpy_matrix(adj_mat)
+        
         # get 1 hop ego net
         output1 = [] 
         # first use stupid method to write then change to batch ego net
@@ -45,17 +43,24 @@ class GraphConvolution(Module):
             ego_Net = cg.ego_graph(G,node,radius=1)
             target= ego_Net.view_edge_list()['dst'].unique()
             #target = [item[1] for item in list(ego_Net.edges(node))]
-            #print ("len of target", len(target))
-            print ("node idx", node)
-            output_vect = sum(support[target])/len(target)
-            print ( "output_vect", output_vect)
+            #print ("target", target)
+            #print ("node idx", node)
+            target_list = []
+            for i in range (len(target)):
+                target_list += [target[i]]
+            #print (target_list)
+            output_vect = sum(support[target_list])/len(target_list)
+            #print (output_vect)
             output1 += [output_vect]
-            output2 = torch.stack(output1, dim =0)
-
+        
+        output2 = torch.stack(output1, dim =0)
+        print (output2.cpu().detach().numpy())        
         print("done with for loop")
         if self.bias is not None:
+            #print (output2 + self.bias)
             return output2 + self.bias
         else:
+            #print (output2)
             return output2
 
     def __repr__(self):
